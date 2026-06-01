@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "conda-helper"
+version = "0.1.0"
+description = "Enhanced CLI on top of conda: backup, migrate, clone, pack, batch clean, friendly errors."
+readme = "README.md"
+requires-python = ">=3.8"
+license = "MIT"
+authors = [{ name = "wellkilo" }]
+keywords = ["conda", "environment", "devops", "cli", "backup", "migration"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: System :: Installation/Setup",
+    "Topic :: Software Development :: Build Tools",
+]
+dependencies = [
+    "click>=8.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/wellkilo/conda-helper"
+Issues = "https://github.com/wellkilo/conda-helper/issues"
+
+[project.scripts]
+conda-helper = "conda_helper.cli:main"
+ch = "conda_helper.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["conda_helper*"]
+exclude = ["tests*"]
+
+[tool.pytest.ini_options]
+addopts = "-ra"
+testpaths = ["tests"]
