@@ -55,6 +55,7 @@ dev = [
 
 [project.urls]
 Homepage = "https://github.com/wellkilo/conda-helper"
+Documentation = "https://wellkilo.github.io/conda-helper/"
 Issues = "https://github.com/wellkilo/conda-helper/issues"
 
 [project.scripts]

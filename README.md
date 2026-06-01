@@ -10,6 +10,7 @@
 <p>
   <a href="#english">English</a> ·
   <a href="#中文">中文</a> ·
+  <a href="https://wellkilo.github.io/conda-helper/">Website</a> ·
   <a href="#command-reference--命令速查">Commands</a> ·
   <a href="#development--开发">Development</a>
 </p>
@@ -19,6 +20,7 @@
   <img alt="Platform" src="https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-2ea44f?style=for-the-badge" />
   <img alt="License" src="https://img.shields.io/badge/License-MIT-0ea5e9?style=for-the-badge" />
   <img alt="CLI" src="https://img.shields.io/badge/CLI-Click-111827?style=for-the-badge" />
+  <a href="https://wellkilo.github.io/conda-helper/"><img alt="Website" src="https://img.shields.io/badge/Website-GitHub%20Pages-4ade80?style=for-the-badge&logo=githubpages&logoColor=white" /></a>
 </p>
 
 </div>
@@ -38,6 +40,8 @@
 ## English
 
 `conda-helper` is a small, cross-platform command-line companion for native [`conda`](https://docs.conda.io/). It wraps frequent but fiddly environment tasks into readable one-liners, adds safer defaults, and translates common failures into actionable hints.
+
+Project website: [`wellkilo.github.io/conda-helper`](https://wellkilo.github.io/conda-helper/)
 
 <table>
   <tr>
@@ -69,6 +73,8 @@
 ## 中文
 
 `conda-helper` 是一个轻量、跨平台的 Conda 命令行增强工具。它基于原生 [`conda`](https://docs.conda.io/) 封装常用环境管理动作，把繁琐命令变成清晰的一行命令，并提供更友好的错误提示与交互式面板。
+
+项目介绍网站：[`wellkilo.github.io/conda-helper`](https://wellkilo.github.io/conda-helper/)
 
 <table>
   <tr>
