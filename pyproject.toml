@@ -10,7 +10,24 @@ readme = "README.md"
 requires-python = ">=3.8"
 license = "MIT"
 authors = [{ name = "wellkilo" }]
-keywords = ["conda", "environment", "devops", "cli", "backup", "migration"]
+keywords = [
+    "conda",
+    "conda-environment",
+    "conda-pack",
+    "cli",
+    "click",
+    "environment-management",
+    "package-management",
+    "backup",
+    "migration",
+    "offline-deployment",
+    "cross-platform",
+    "devops",
+    "developer-tools",
+    "machine-learning",
+    "data-science",
+    "productivity",
+]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Environment :: Console",
