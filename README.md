@@ -109,7 +109,7 @@ Project website: [`wellkilo.github.io/conda-helper`](https://wellkilo.github.io/
 
 | Capability / 能力 | Command / 命令 | Benefit / 收益 |
 |---|---|---|
-| Environment list / 环境列表 | `conda-helper ls` | Show prefix and on-disk size / 展示路径与磁盘占用 |
+| Environment list / 环境列表 | `conda-helper ls` | Show prefix and on-disk size; use `--no-size` for the fastest list / 展示路径与磁盘占用；使用 `--no-size` 可最快列出 |
 | Versioned backup / 版本化备份 | `conda-helper backup my_env` | Timestamped YAML / 自动生成时间戳 YAML |
 | Portable backup / 可移植备份 | `conda-helper backup my_env --from-history` | Export explicit packages only / 只导出主动安装包 |
 | Restore / 恢复 | `conda-helper restore env.yml -n my_env_v2` | Rebuild with name override / 支持恢复时改名 |
@@ -175,6 +175,10 @@ conda-helper doctor
 # 查看环境列表与磁盘占用
 conda-helper ls
 
+# Fast list when you do not need size calculation
+# 不需要统计磁盘占用时，可跳过目录扫描以获得最快输出
+conda-helper ls --no-size
+
 # Back up an environment to the default backup directory
 # 备份环境到默认备份目录
 conda-helper backup my_env
@@ -213,7 +217,7 @@ conda-helper panel
 
 | Long form / 完整命令 | Short / 短命令 | Description / 说明 |
 |---|---:|---|
-| `conda-helper ls` | `ch l` | List envs with size and prefix. Use `--json` for machine output. / 列出环境、大小与路径，可用 `--json` 输出机器可读格式。 |
+| `conda-helper ls` | `ch l` | List envs with size and prefix. Use `--no-size` for fastest output, or `--json` for machine output. / 列出环境、大小与路径；可用 `--no-size` 最快输出，或用 `--json` 输出机器可读格式。 |
 | `conda-helper backup <name>` | `ch b` | Export to versioned YAML. Add `--from-history` for portable backups. / 导出带版本的 YAML，可加 `--from-history` 增强可移植性。 |
 | `conda-helper restore <yaml>` | `ch r` | Recreate from YAML. Use `-n` to rename. / 从 YAML 重建环境，可用 `-n` 改名。 |
 | `conda-helper clone <src> <dst>` | `ch c` | Wraps `conda create --clone`. / 封装原生克隆能力。 |
@@ -228,6 +232,16 @@ Run the following for full flags / 查看完整参数：
 ```bash
 conda-helper <cmd> -h
 ```
+
+### Performance Notes / 性能说明
+
+- `conda-helper ls` calculates on-disk size by scanning each environment directory. This is useful, but it can take a while when environments contain many small files. The command shows a waiting hint in interactive terminals while it is working.
+- `conda-helper ls --no-size` skips directory scanning and only asks Conda for the environment list, so it is the fastest way to check names and prefixes.
+- Other long-running commands such as `backup`, `restore`, `clone`, `pack`, `rm`, `purge`, and `doctor` also print lightweight waiting hints in interactive terminals.
+
+- `conda-helper ls` 会扫描每个环境目录来计算磁盘占用。这个信息很有用，但当环境里有大量小文件时会变慢；现在交互式终端会显示等待提示。
+- `conda-helper ls --no-size` 会跳过目录扫描，只向 Conda 获取环境列表，因此是查看环境名和路径的最快方式。
+- `backup`、`restore`、`clone`、`pack`、`rm`、`purge`、`doctor` 等其它可能耗时的命令，也会在交互式终端显示轻量等待提示。
 
 ---
 

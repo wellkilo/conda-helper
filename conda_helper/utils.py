@@ -2,19 +2,23 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import platform
 import shutil
 import sys
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Iterator
+from typing import Iterator, Optional
 
 import click
 
 
 def default_backup_dir() -> Path:
     """Return a sensible default backup directory for the host OS."""
-    if platform.system() == "Windows":
+    override = os.environ.get("CONDA_HELPER_BACKUP_DIR")
+    if override:
+        base = Path(override).expanduser()
+    elif platform.system() == "Windows":
         base = Path.home() / "AppData" / "Local" / "conda-helper" / "backups"
     elif platform.system() == "Darwin":
         base = Path.home() / "Library" / "Application Support" / "conda-helper" / "backups"
@@ -35,7 +39,11 @@ def file_sha256(path: Path, chunk_size: int = 1 << 20) -> str:
     return h.hexdigest()
 
 
-def human_size(num_bytes: int) -> str:
+def human_size(num_bytes: Optional[int]) -> str:
+    if num_bytes is None:
+        return "-"
+    if num_bytes < 0:
+        num_bytes = 0
     units = ["B", "KiB", "MiB", "GiB", "TiB"]
     size = float(num_bytes)
     for unit in units:
@@ -53,6 +61,34 @@ def spinner(message: str) -> Iterator[None]:
         yield
     finally:
         click.secho(f"... done: {message}", fg="green")
+
+
+@contextmanager
+def wait_status(
+    message: str,
+    *,
+    enabled: Optional[bool] = None,
+    stream: str = "stderr",
+) -> Iterator[None]:
+    """Print a lightweight status message around long-running operations.
+
+    The helper intentionally stays simple and dependency-free. By default it
+    only emits messages in interactive terminals so JSON output and scripts are
+    not polluted. Tests and callers can force it on/off with ``enabled``.
+    """
+    output = click.echo
+    target = sys.stdout if stream == "stdout" else sys.stderr
+    active = target.isatty() if enabled is None else enabled
+    if not active:
+        yield
+        return
+
+    err = stream != "stdout"
+    output(f"... {message}", err=err)
+    try:
+        yield
+    finally:
+        output(f"... done: {message}", err=err)
 
 
 def require_tool(name: str) -> str:
