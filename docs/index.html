@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="conda-helper is a beautiful, safe, and repeatable CLI companion for Conda environment backup, restore, clone, pack, cleanup, and diagnostics."
+    />
+    <title>conda-helper · Beautiful Conda environment workflows</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./site.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="site-header">
+        <a class="brand" href="#top" aria-label="conda-helper home">
+          <span class="brand-mark">ch</span>
+          <span>
+            <strong>conda-helper</strong>
+            <small>Conda workflow companion</small>
+          </span>
+        </a>
+        <nav class="site-nav" aria-label="Primary navigation">
+          <a href="#features">Features</a>
+          <a href="#workflow">Workflow</a>
+          <a href="#architecture">Architecture</a>
+          <a href="#install">Install</a>
+        </nav>
+        <a class="header-cta" href="https://github.com/wellkilo/conda-helper">GitHub</a>
+      </header>
+
+      <main id="top">
+        <section class="hero section-grid">
+          <div class="hero-copy">
+            <p class="eyebrow">Python CLI · Conda · Cross-platform</p>
+            <h1>Make Conda environment operations beautiful, safe, and repeatable.</h1>
+            <p class="hero-lede">
+              conda-helper wraps frequent environment tasks into readable one-liners,
+              adds safer defaults, and turns common Conda failures into actionable
+              hints for research, data science, and local development workflows.
+            </p>
+            <div class="hero-actions">
+              <a class="button primary" href="#install">Get started</a>
+              <a class="button ghost" href="https://github.com/wellkilo/conda-helper">View source</a>
+              <a class="button ghost" href="https://github.com/wellkilo">@wellkilo</a>
+            </div>
+            <div class="stats" aria-label="Project highlights">
+              <div><strong>8+</strong><span>CLI commands</span></div>
+              <div><strong>3</strong><span>platform families</span></div>
+              <div><strong>MIT</strong><span>open source</span></div>
+            </div>
+          </div>
+
+          <div class="terminal-card" aria-label="conda-helper command preview">
+            <div class="terminal-titlebar">
+              <span></span><span></span><span></span>
+              <p>workflow.sh</p>
+            </div>
+            <pre><code>$ conda-helper ls
+NAME                     SIZE  PREFIX
+base                   4.2 GB  /opt/miniconda3
+vision-lab             9.8 GB  /envs/vision-lab
+
+$ conda-helper backup vision-lab --from-history
+backup written: vision-lab-20260601-101530-history.yml
+
+$ conda-helper pack vision-lab -o ./dist
+archive ready: dist/vision-lab-20260601-101630.tar.gz</code></pre>
+          </div>
+        </section>
+
+        <section class="logo-strip" aria-label="Core command categories">
+          <span>Backup</span>
+          <span>Restore</span>
+          <span>Clone</span>
+          <span>Pack</span>
+          <span>Clean</span>
+          <span>Doctor</span>
+          <span>Panel</span>
+        </section>
+
+        <section id="features" class="section">
+          <div class="section-heading">
+            <p class="eyebrow">Feature map</p>
+            <h2>Everything you need for daily Conda environment operations.</h2>
+            <p>
+              Designed for users who manage many local environments and want a safer,
+              more memorable interface on top of native Conda.
+            </p>
+          </div>
+          <div class="feature-grid">
+            <article class="feature-card">
+              <span class="icon">01</span>
+              <h3>Versioned backups</h3>
+              <p>Export environments to timestamped YAML files, with history-only mode for portable migrations.</p>
+            </article>
+            <article class="feature-card">
+              <span class="icon">02</span>
+              <h3>Restore and rename</h3>
+              <p>Rebuild from any backup and override the target environment name during restore.</p>
+            </article>
+            <article class="feature-card">
+              <span class="icon">03</span>
+              <h3>One-command cloning</h3>
+              <p>Wrap native <code>conda create --clone</code> into a compact, easy-to-remember command.</p>
+            </article>
+            <article class="feature-card">
+              <span class="icon">04</span>
+              <h3>Offline archives</h3>
+              <p>Prefer <code>conda-pack</code> for relocatable archives and fall back to metadata-rich tarballs.</p>
+            </article>
+            <article class="feature-card">
+              <span class="icon">05</span>
+              <h3>Safe cleanup</h3>
+              <p>Batch-remove stale environments and preview cache cleanup with dry-run support.</p>
+            </article>
+            <article class="feature-card">
+              <span class="icon">06</span>
+              <h3>Friendly diagnostics</h3>
+              <p>Run health checks and translate network, disk, channel, and permission problems into practical hints.</p>
+            </article>
+          </div>
+        </section>
+
+        <section id="workflow" class="section section-grid workflow-section">
+          <div>
+            <p class="eyebrow">Workflow design</p>
+            <h2>A CLI that follows how environments actually move.</h2>
+            <p>
+              conda-helper organizes Conda operations around a repeatable lifecycle:
+              inspect, preserve, move, deploy, and clean. Each command has clear output
+              and conservative behavior by default.
+            </p>
+          </div>
+          <div class="timeline">
+            <div><strong>Inspect</strong><span><code>conda-helper ls</code> shows size and prefix.</span></div>
+            <div><strong>Preserve</strong><span><code>backup --from-history</code> keeps migrations portable.</span></div>
+            <div><strong>Move</strong><span><code>restore</code>, <code>clone</code>, and <code>pack</code> cover common transfer paths.</span></div>
+            <div><strong>Recover</strong><span><code>doctor</code> and friendly errors guide next actions.</span></div>
+          </div>
+        </section>
+
+        <section id="architecture" class="section">
+          <div class="section-heading">
+            <p class="eyebrow">Technical design</p>
+            <h2>Small modules, testable boundaries, native Conda underneath.</h2>
+          </div>
+          <div class="architecture-grid">
+            <article>
+              <h3>Click-based interface</h3>
+              <p>The command layer provides ergonomic flags, aliases, validation, and terminal-friendly output.</p>
+            </article>
+            <article>
+              <h3>Command service layer</h3>
+              <p>High-level operations return plain Python data so core behavior can be unit-tested independently.</p>
+            </article>
+            <article>
+              <h3>Conda wrapper</h3>
+              <p>A focused adapter delegates to the real Conda executable instead of reimplementing package logic.</p>
+            </article>
+            <article>
+              <h3>Actionable error model</h3>
+              <p>Known Conda failure patterns are mapped to friendly explanations and next-step suggestions.</p>
+            </article>
+          </div>
+        </section>
+
+        <section id="install" class="section install-card">
+          <div>
+            <p class="eyebrow">Install</p>
+            <h2>Start from PyPI or source.</h2>
+            <p>Requires Python 3.8+ and an available Conda installation.</p>
+          </div>
+          <pre><code>pip install conda-helper
+conda-helper doctor
+
+# or install from source
+git clone https://github.com/wellkilo/conda-helper.git
+cd conda-helper
+pip install -e .</code></pre>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <p>Built for safer Conda workflows by <a href="https://github.com/wellkilo">wellkilo</a>.</p>
+        <p><a href="https://github.com/wellkilo/conda-helper">Repository</a> · <a href="https://github.com/wellkilo/conda-helper/issues">Issues</a> · MIT License</p>
+      </footer>
+    </div>
+  </body>
+</html>
