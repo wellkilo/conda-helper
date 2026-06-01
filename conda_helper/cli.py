@@ -10,13 +10,18 @@ import click
 from . import __version__, commands
 from .conda_wrapper import CondaWrapper
 from .errors import CondaHelperError, format_error
-from .utils import default_backup_dir, is_tty
+from .utils import is_tty, wait_status
 
 
 # ---------------------------------------------------------------------- #
 # helpers
 # ---------------------------------------------------------------------- #
 def _get_wrapper(ctx: click.Context) -> CondaWrapper:
+    """Lazily instantiate :class:`CondaWrapper` and cache it on the context.
+
+    Tests inject a pre-built ``wrapper`` into ``ctx.obj`` so we never
+    require a real conda installation at unit-test time.
+    """
     wrapper: Optional[CondaWrapper] = ctx.obj.get("wrapper") if ctx.obj else None
     if wrapper is None:
         wrapper = CondaWrapper()
@@ -63,11 +68,17 @@ def cli(ctx: click.Context, conda_bin: Optional[str]) -> None:
 # ---------------------------------------------------------------------- #
 @cli.command("ls", help="List conda environments with on-disk size.")
 @click.option("--json", "as_json", is_flag=True, help="Emit JSON output.")
+@click.option(
+    "--no-size",
+    is_flag=True,
+    help="Skip directory size calculation for the fastest environment list.",
+)
 @click.pass_context
-def cmd_ls(ctx: click.Context, as_json: bool) -> None:
+def cmd_ls(ctx: click.Context, as_json: bool, no_size: bool) -> None:
     wrapper = _get_wrapper(ctx)
     try:
-        envs = commands.list_environments(wrapper)
+        with wait_status("loading conda environments", enabled=not as_json):
+            envs = commands.list_environments(wrapper, include_size=not no_size)
     except CondaHelperError as exc:
         _print_error(exc)
         sys.exit(1)
@@ -99,12 +110,13 @@ def cmd_backup(
 ) -> None:
     wrapper = _get_wrapper(ctx)
     try:
-        path = commands.backup_environment(
-            wrapper,
-            name,
-            output_dir=Path(output_dir) if output_dir else None,
-            from_history=from_history,
-        )
+        with wait_status(f"exporting environment {name!r}"):
+            path = commands.backup_environment(
+                wrapper,
+                name,
+                output_dir=Path(output_dir) if output_dir else None,
+                from_history=from_history,
+            )
     except CondaHelperError as exc:
         _print_error(exc)
         sys.exit(1)
@@ -118,7 +130,8 @@ def cmd_backup(
 def cmd_restore(ctx: click.Context, yaml_path: str, name: Optional[str]) -> None:
     wrapper = _get_wrapper(ctx)
     try:
-        created = commands.restore_environment(wrapper, Path(yaml_path), name=name)
+        with wait_status("creating environment from YAML"):
+            created = commands.restore_environment(wrapper, Path(yaml_path), name=name)
     except CondaHelperError as exc:
         _print_error(exc)
         sys.exit(1)
@@ -135,7 +148,8 @@ def cmd_restore(ctx: click.Context, yaml_path: str, name: Optional[str]) -> None
 def cmd_clone(ctx: click.Context, src: str, dst: str) -> None:
     wrapper = _get_wrapper(ctx)
     try:
-        commands.clone_environment(wrapper, src, dst)
+        with wait_status(f"cloning {src!r} to {dst!r}"):
+            commands.clone_environment(wrapper, src, dst)
     except CondaHelperError as exc:
         _print_error(exc)
         sys.exit(1)
@@ -151,7 +165,8 @@ def cmd_rm(ctx: click.Context, names: tuple, yes: bool) -> None:
     if not yes:
         click.echo("About to remove: " + ", ".join(names))
         click.confirm("Proceed?", abort=True)
-    results = commands.batch_remove(wrapper, names)
+    with wait_status("removing environments"):
+        results = commands.batch_remove(wrapper, names)
     for r in results:
         color = "green" if r["ok"] else "red"
         status = "OK " if r["ok"] else "ERR"
@@ -166,7 +181,8 @@ def cmd_rm(ctx: click.Context, names: tuple, yes: bool) -> None:
 def cmd_purge(ctx: click.Context, dry_run: bool) -> None:
     wrapper = _get_wrapper(ctx)
     try:
-        out = commands.purge_caches(wrapper, dry_run=dry_run)
+        with wait_status("cleaning conda caches"):
+            out = commands.purge_caches(wrapper, dry_run=dry_run)
     except CondaHelperError as exc:
         _print_error(exc)
         sys.exit(1)
@@ -186,9 +202,10 @@ def cmd_purge(ctx: click.Context, dry_run: bool) -> None:
 def cmd_pack(ctx: click.Context, name: str, output_dir: Optional[str]) -> None:
     wrapper = _get_wrapper(ctx)
     try:
-        archive = commands.pack_environment(
-            wrapper, name, output_dir=Path(output_dir) if output_dir else None
-        )
+        with wait_status(f"packing environment {name!r}"):
+            archive = commands.pack_environment(
+                wrapper, name, output_dir=Path(output_dir) if output_dir else None
+            )
     except CondaHelperError as exc:
         _print_error(exc)
         sys.exit(1)
@@ -202,7 +219,8 @@ def cmd_pack(ctx: click.Context, name: str, output_dir: Optional[str]) -> None:
 @click.pass_context
 def cmd_doctor(ctx: click.Context) -> None:
     wrapper = _get_wrapper(ctx)
-    report = commands.doctor(wrapper)
+    with wait_status("checking conda health"):
+        report = commands.doctor(wrapper)
     info = report["info"]
     click.secho(
         f"conda {info.get('conda_version')} on {info.get('platform')}",

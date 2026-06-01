@@ -10,6 +10,9 @@ GPU box, both with the same OS family.
 # Inspect what we have
 conda-helper ls
 
+# Fast inspect when size is not needed
+conda-helper ls --no-size
+
 # Two complementary backups: the full pinned spec (reproducible) and
 # the slim, OS-portable spec (good for sharing with teammates on
 # different OSes).
@@ -52,6 +55,6 @@ conda-unpack          # provided by conda-pack, fixes path prefixes
 ## 4. Verify
 
 ```bash
-conda-helper ls | grep my_ml
+conda-helper ls --no-size | grep my_ml
 conda-helper doctor
 ```

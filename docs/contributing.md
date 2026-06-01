@@ -15,14 +15,20 @@ pytest -q
 
 ```
 conda_helper/
-  __init__.py       package metadata
+  __init__.py       package metadata (incl. __version__)
+  __main__.py       enables `python -m conda_helper`
   cli.py            click entry-points
   panel.py          interactive menu
   commands.py       high-level operations (testable, no click)
   conda_wrapper.py  subprocess wrapper around `conda`
   errors.py         typed errors + stderr → hint translation
-  utils.py          tiny cross-platform helpers
-tests/              pytest suite, mocks the wrapper
+  utils.py          tiny cross-platform helpers (paths, spinner, sizes)
+tests/
+  __init__.py
+  test_conda_helper.py   pytest suite, mocks the wrapper
+examples/           runnable usage examples
+docs/               GitHub Pages site + contributor docs
+.github/workflows/  CI matrix + PyPI Trusted-Publisher release pipeline
 ```
 
 ## Adding a new command

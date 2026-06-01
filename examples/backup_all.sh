@@ -7,8 +7,8 @@ set -euo pipefail
 BACKUP_DIR="${HOME}/conda-backups/$(date +%F)"
 mkdir -p "${BACKUP_DIR}"
 
-# Iterate every env name (skip the JSON wrapper) and back it up.
-conda-helper ls --json | python -c "
+# Iterate every env name (skip size calculation and the JSON wrapper) and back it up.
+conda-helper ls --no-size --json | python -c "
 import json, sys
 for e in json.load(sys.stdin):
     print(e['name'])

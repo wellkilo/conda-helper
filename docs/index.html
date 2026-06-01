@@ -67,6 +67,11 @@ NAME                     SIZE  PREFIX
 base                   4.2 GB  /opt/miniconda3
 vision-lab             9.8 GB  /envs/vision-lab
 
+$ conda-helper ls --no-size
+NAME                     SIZE  PREFIX
+base                       -   /opt/miniconda3
+vision-lab                 -   /envs/vision-lab
+
 $ conda-helper backup vision-lab --from-history
 backup written: vision-lab-20260601-101530-history.yml
 
@@ -139,7 +144,7 @@ archive ready: dist/vision-lab-20260601-101630.tar.gz</code></pre>
             </p>
           </div>
           <div class="timeline">
-            <div><strong>Inspect</strong><span><code>conda-helper ls</code> shows size and prefix.</span></div>
+            <div><strong>Inspect</strong><span><code>conda-helper ls</code> shows size and prefix; <code>--no-size</code> skips scanning for fast checks.</span></div>
             <div><strong>Preserve</strong><span><code>backup --from-history</code> keeps migrations portable.</span></div>
             <div><strong>Move</strong><span><code>restore</code>, <code>clone</code>, and <code>pack</code> cover common transfer paths.</span></div>
             <div><strong>Recover</strong><span><code>doctor</code> and friendly errors guide next actions.</span></div>

@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "conda-helper"
-version = "0.1.0"
-description = "Enhanced CLI on top of conda: backup, migrate, clone, pack, batch clean, friendly errors."
+version = "0.1.1"
+description = "Enhanced CLI on top of conda: fast env listing, backup, migrate, clone, pack, batch clean, friendly errors."
 readme = "README.md"
 requires-python = ">=3.8"
 license = "MIT"
@@ -17,6 +17,7 @@ keywords = [
     "cli",
     "click",
     "environment-management",
+    "environment-listing",
     "package-management",
     "backup",
     "migration",

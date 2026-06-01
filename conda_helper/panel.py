@@ -5,7 +5,6 @@ sticks to the stdlib + click so the package stays light.
 """
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 
 import click
@@ -13,6 +12,7 @@ import click
 from . import commands
 from .conda_wrapper import CondaWrapper
 from .errors import CondaHelperError, format_error
+from .utils import wait_status
 
 
 _MENU = [
@@ -26,6 +26,11 @@ _MENU = [
     ("Doctor / health check", "doctor"),
     ("Quit", "q"),
 ]
+
+
+def _status(message: str):
+    """Spinner used by the interactive panel (stdout-bound)."""
+    return wait_status(message, stream="stdout")
 
 
 def run_panel(wrapper: CondaWrapper) -> None:
@@ -52,7 +57,8 @@ def run_panel(wrapper: CondaWrapper) -> None:
 
 def _dispatch(wrapper: CondaWrapper, action: str) -> None:
     if action == "ls":
-        envs = commands.list_environments(wrapper)
+        with _status("loading conda environments"):
+            envs = commands.list_environments(wrapper)
         click.secho(f"{'NAME':<24} {'SIZE':>10}  PREFIX", bold=True)
         for env in envs:
             click.echo(f"{env['name']:<24} {env['size_human']:>10}  {env['prefix']}")
@@ -61,29 +67,33 @@ def _dispatch(wrapper: CondaWrapper, action: str) -> None:
     if action == "backup":
         name = click.prompt("Environment name")
         from_history = click.confirm("Use --from-history?", default=False)
-        path = commands.backup_environment(wrapper, name, from_history=from_history)
+        with _status(f"exporting environment {name!r}"):
+            path = commands.backup_environment(wrapper, name, from_history=from_history)
         click.secho(f"backup written: {path}", fg="green")
         return
 
     if action == "restore":
         yaml_path = click.prompt("Path to YAML", type=click.Path(exists=True))
         new_name = click.prompt("New environment name (blank to keep)", default="", show_default=False)
-        created = commands.restore_environment(
-            wrapper, Path(yaml_path), name=new_name or None
-        )
+        with _status("creating environment from YAML"):
+            created = commands.restore_environment(
+                wrapper, Path(yaml_path), name=new_name or None
+            )
         click.secho(f"restored as: {created}", fg="green")
         return
 
     if action == "clone":
         src = click.prompt("Source env")
         dst = click.prompt("Destination name")
-        commands.clone_environment(wrapper, src, dst)
+        with _status(f"cloning {src!r} to {dst!r}"):
+            commands.clone_environment(wrapper, src, dst)
         click.secho(f"cloned {src} -> {dst}", fg="green")
         return
 
     if action == "pack":
         name = click.prompt("Environment to pack")
-        archive = commands.pack_environment(wrapper, name)
+        with _status(f"packing environment {name!r}"):
+            archive = commands.pack_environment(wrapper, name)
         click.secho(f"archive ready: {archive}", fg="green")
         return
 
@@ -96,7 +106,8 @@ def _dispatch(wrapper: CondaWrapper, action: str) -> None:
             return
         click.echo("About to remove: " + ", ".join(names))
         click.confirm("Proceed?", abort=True)
-        results = commands.batch_remove(wrapper, names)
+        with _status("removing environments"):
+            results = commands.batch_remove(wrapper, names)
         for r in results:
             color = "green" if r["ok"] else "red"
             status = "OK " if r["ok"] else "ERR"
@@ -105,11 +116,13 @@ def _dispatch(wrapper: CondaWrapper, action: str) -> None:
 
     if action == "purge":
         dry = click.confirm("Dry run?", default=True)
-        out = commands.purge_caches(wrapper, dry_run=dry)
+        with _status("cleaning conda caches"):
+            out = commands.purge_caches(wrapper, dry_run=dry)
         click.echo(out)
         return
 
     if action == "doctor":
-        report = commands.doctor(wrapper)
+        with _status("checking conda health"):
+            report = commands.doctor(wrapper)
         click.echo(report)
         return
